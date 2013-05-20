@@ -45,8 +45,6 @@ class ParseCommand(Command):
         parser.add_argument('logfile', help="Logfile to parse")
         parser.add_argument('--offset-file', help="")
         parser.add_argument('--parser', help="", required=True)
-        # parser.add_argument('--target', help="", default="stdout")
-        # parser.add_argument('--paranoid', help="")
 
         return parser
 
