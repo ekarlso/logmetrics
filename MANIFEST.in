@@ -1,0 +1,12 @@
+include AUTHORS
+include ChangeLog
+include logmetrics/versioninfo
+include *.txt *.ini *.cfg *.rst *.md
+recursive-include tools *
+
+exclude .gitignore
+exclude .gitreview
+exclude *.sublime-project
+
+global-exclude *.pyc
+
