@@ -22,3 +22,9 @@ dist
 logmetrics/versioninfo
 *.log
 *.log.offset
+debian/files
+debian/*.debhelper
+debian/*.substvars
+debian/tmp/
+debian/logmetrics/
+debian/python-logmetrics/
