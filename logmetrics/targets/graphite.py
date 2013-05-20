@@ -25,6 +25,7 @@ class GraphiteParseCommand(ParseCommand):
 
         parser.add_argument('--graphite-host', default="127.0.0.1")
         parser.add_argument('--graphite-port', default=2003)
+        parser.add_argument('--graphite-metric-prefix', default=None)
 
         return parser
 
@@ -44,8 +45,14 @@ class GraphiteTarget(Target):
             self.send_metric(metric.name, metric.value, metric.timestamp)
 
     def send_metric(self, name, value, timestamp):
-        ts = calendar.timegm(timestamp.timetuple())
+        prefix = parsed_args.graphite_metric_prefix
+
+        if prefix:
+            name = "%s.%s" % (prefix, name)
+
+        timestamp = calendar.timegm(timestamp.timetuple())
+
         try:
-            self._sock.send("%s %g %s\n\n" % (name, value, ts))
+            self._sock.send("%s %g %s\n\n" % (name, value, timestamp))
         except socket.error, e:
             raise Exception("Failed to send metric: %s", e)
