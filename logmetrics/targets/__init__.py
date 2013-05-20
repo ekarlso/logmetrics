@@ -13,8 +13,15 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations
 # under the License.
+import abc
 
 
 class Target(object):
+    __metaclass__ = abc.ABCMeta
+
     def __init__(self):
+        pass
+
+    @abc.abstractmethod
+    def publish(self, metrics):
         pass

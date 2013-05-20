@@ -13,7 +13,13 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations
 # under the License.
+import datetime
 from collections import namedtuple
 
 
-Metric = namedtuple('Metric', ['name', 'value', 'description'])
+class Metric(object):
+    def __init__(self, name, value, units=None, timestamp=None):
+        self.name = name
+        self.value = value
+        self.units = units
+        self.timestamp = timestamp or datetime.datetime.utcnow()

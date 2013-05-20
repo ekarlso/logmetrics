@@ -13,6 +13,7 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations
 # under the License.
+import abc
 import logging
 from cliff.app import App
 from cliff.command import Command
@@ -36,13 +37,15 @@ class LogmetricsShell(App):
 
 
 class ParseCommand(Command):
+    __metaclass__ = abc.ABCMeta
+
     def get_parser(self, prog_name):
         parser = super(ParseCommand, self).get_parser(prog_name)
 
         parser.add_argument('logfile', help="Logfile to parse")
         parser.add_argument('--offset-file', help="")
         parser.add_argument('--parser', help="", required=True)
-        parser.add_argument('--target', help="", default="stdout")
+        # parser.add_argument('--target', help="", default="stdout")
         # parser.add_argument('--paranoid', help="")
 
         return parser
@@ -72,11 +75,9 @@ class ParseCommand(Command):
             except Exception, e:
                 self.app.log.warn(e)
 
+    @abc.abstractmethod
     def init_target(self):
-        manager = DriverManager('logmetrics.target',
-                                self.parsed_args.target)
-
-        self.target = manager.driver()
+        pass
 
     def send_metrics(self):
         metrics = self.parser.get_state(0)

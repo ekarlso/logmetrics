@@ -13,14 +13,21 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations
 # under the License.
+from logmetrics.shell import ParseCommand
 from logmetrics.targets import Target
 
 
-class StdoutTarget(object):
+class StdoutParseCommand(ParseCommand):
+    def init_target(self):
+        self.target = StdoutTarget()
+
+
+class StdoutTarget(Target):
     def publish(self, metrics):
         for metric in metrics:
-            print('%s: %s (%s)' % (
+            print('%s: %s %s (%s)' % (
                 metric.name,
                 metric.value,
-                metric.description
+                metric.units,
+                metric.timestamp,
             ))
