@@ -42,9 +42,9 @@ class ParseCommand(Command):
     def get_parser(self, prog_name):
         parser = super(ParseCommand, self).get_parser(prog_name)
 
+        parser.add_argument('parser', help="Parser to user")
         parser.add_argument('logfile', help="Logfile to parse")
-        parser.add_argument('--offset-file', help="")
-        parser.add_argument('--parser', help="", required=True)
+        parser.add_argument('--offset-file')
 
         return parser
 
@@ -64,8 +64,13 @@ class ParseCommand(Command):
         self.parser = manager.driver()
 
     def process_file(self):
-        pygtail = Pygtail(self.parsed_args.logfile,
-                          offset_file=self.parsed_args.offset_file)
+        log_file = self.parsed_args.logfile
+        offset_file = self.parsed_args.offset_file
+
+        if offset_file is None:
+            offset_file = '%s.offset-%s' % (log_file, self.parsed_args.parser)
+
+        pygtail = Pygtail(log_file, offset_file=offset_file)
 
         for line in pygtail:
             try:

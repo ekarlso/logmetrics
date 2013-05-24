@@ -45,6 +45,7 @@ class NginxStatusParser(Parser):
         self.http_408 = 0
         self.http_409 = 0
         self.http_413 = 0
+        self.http_499 = 0
 
         self.http_5xx = 0
         self.http_500 = 0
@@ -54,83 +55,79 @@ class NginxStatusParser(Parser):
         self.http_504 = 0
 
     def parse_line(self, line):
-        try:
-            # Apply regular expression to each line and extract interesting
-            # fields
-            regMatch = self.REGEX.match(line)
+        # Apply regular expression to each line and extract interesting
+        # fields
+        regMatch = self.REGEX.match(line)
 
-            if regMatch:
-                linebits = regMatch.groupdict()
-                status = int(linebits['http_status_code'])
+        if regMatch:
+            linebits = regMatch.groupdict()
+            status = int(linebits['http_status_code'])
 
-                # Outer if/else buckets the lines into smaller groups
-                # Inner if/else checks the specific status code
+            # Outer if/else buckets the lines into smaller groups
+            # Inner if/else checks the specific status code
 
-                if (status < 100):
-                    # HTTP 000 -> 099
-                    pass
-                elif (status < 200):
-                    # HTTP 100 -> 199
-                    self.http_1xx += 1
-                elif (status < 300):
-                    # HTTP 200 -> 299
-                    if status == 200:
-                        self.http_200 += 1
-                    elif status == 201:
-                        self.http_201 += 1
-                    elif status == 202:
-                        self.http_202 += 1
-                    elif status == 203:
-                        self.http_203 += 1
-                    elif status == 204:
-                        self.http_204 += 1
-                    else:
-                        self.http_2xx += 1
-                elif (status < 400):
-                    # HTTP 300 -> 399
-                    self.http_3xx += 1
-                elif (status < 500):
-                    # HTTP 400 -> 499
-                    if status == 400:
-                        self.http_400 += 1
-                    elif status == 401:
-                        self.http_401 += 1
-                    elif status == 403:
-                        self.http_403 += 1
-                    elif status == 404:
-                        self.http_404 += 1
-                    elif status == 405:
-                        self.http_405 += 1
-                    elif status == 406:
-                        self.http_406 += 1
-                    elif status == 408:
-                        self.http_408 += 1
-                    elif status == 409:
-                        self.http_409 += 1
-                    elif status == 413:
-                        self.http_413 += 1
-                    else:
-                        self.http_4xx += 1
+            if (status < 100):
+                # HTTP 000 -> 099
+                pass
+            elif (status < 200):
+                # HTTP 100 -> 199
+                self.http_1xx += 1
+            elif (status < 300):
+                # HTTP 200 -> 299
+                if status == 200:
+                    self.http_200 += 1
+                elif status == 201:
+                    self.http_201 += 1
+                elif status == 202:
+                    self.http_202 += 1
+                elif status == 203:
+                    self.http_203 += 1
+                elif status == 204:
+                    self.http_204 += 1
                 else:
-                    # HTTP 500+
-                    if status == 500:
-                        self.http_500 += 1
-                    elif status == 501:
-                        self.http_501 += 1
-                    elif status == 502:
-                        self.http_502 += 1
-                    elif status == 503:
-                        self.http_503 += 1
-                    elif status == 504:
-                        self.http_504 += 1
-                    else:
-                        self.http_5xx += 1
-
+                    self.http_2xx += 1
+            elif (status < 400):
+                # HTTP 300 -> 399
+                self.http_3xx += 1
+            elif (status < 500):
+                # HTTP 400 -> 499
+                if status == 400:
+                    self.http_400 += 1
+                elif status == 401:
+                    self.http_401 += 1
+                elif status == 403:
+                    self.http_403 += 1
+                elif status == 404:
+                    self.http_404 += 1
+                elif status == 405:
+                    self.http_405 += 1
+                elif status == 406:
+                    self.http_406 += 1
+                elif status == 408:
+                    self.http_408 += 1
+                elif status == 409:
+                    self.http_409 += 1
+                elif status == 413:
+                    self.http_413 += 1
+                elif status == 499:
+                    self.http_499 += 1
+                else:
+                    print status
+                    self.http_4xx += 1
             else:
-                raise Exception("regmatch failed to match")
-
-        except Exception, e:
-            raise Exception("regmatch or contents failed with %s" % e)
+                # HTTP 500+
+                if status == 500:
+                    self.http_500 += 1
+                elif status == 501:
+                    self.http_501 += 1
+                elif status == 502:
+                    self.http_502 += 1
+                elif status == 503:
+                    self.http_503 += 1
+                elif status == 504:
+                    self.http_504 += 1
+                else:
+                    self.http_5xx += 1
 
     def get_state(self, duration):
         return [
@@ -155,6 +152,7 @@ class NginxStatusParser(Parser):
             Metric("http_408", self.http_408, "Responses"),
             Metric("http_409", self.http_409, "Responses"),
             Metric("http_413", self.http_413, "Responses"),
+            Metric("http_499", self.http_499, "Responses"),
 
             Metric("http_5xx", self.http_5xx, "Responses"),
             Metric("http_500", self.http_500, "Responses"),

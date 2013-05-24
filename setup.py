@@ -48,15 +48,17 @@ setup(
     cmdclass=common_setup.get_cmdclass(),
     entry_points=textwrap.dedent("""
         [logmetrics.cli]
-        stdout = logmetrics.targets.stdout:StdoutParseCommand
         graphite = logmetrics.targets.graphite:GraphiteParseCommand
+        hpsla = logmetrics.targets.hpsla:HpslaParseCommand
+        stdout = logmetrics.targets.stdout:StdoutParseCommand
 
         [logmetrics.parser]
         nginx-status = logmetrics.parsers.nginx:NginxStatusParser
 
         [logmetrics.target]
-        stdout = logmetrics.targets.stdout:StdoutTarget
         graphite = logmetrics.targets.graphite:GraphiteTarget
+        hpsla = logmetrics.targets.hpsla:HpslaTarget
+        stdout = logmetrics.targets.stdout:StdoutTarget
         """),
     classifiers=[
         'Development Status :: 3 - Alpha',
