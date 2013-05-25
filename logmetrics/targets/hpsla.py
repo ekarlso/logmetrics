@@ -120,10 +120,11 @@ class HpslaTarget(Target):
 
     def publish(self, metrics):
         for metric in metrics:
-            if metric.value == 0:
-                continue
+            try:
+                self.send_metric(metric.name, metric.value, metric.timestamp)
+            except Exception, e:
+                print "Failed to send metric: %r" % e
 
-            self.send_metric(metric.name, metric.value, metric.timestamp)
 
     def send_metric(self, name, value, timestamp):
         metric = MaasMetric(**{
@@ -139,7 +140,4 @@ class HpslaTarget(Target):
             }
         })
 
-        try:
-            self.client.metrics.create(metric)
-        except exceptions.Base, e:
-            raise Exception("Failed to send metric: %s", e)
+        self.client.metrics.create(metric)
