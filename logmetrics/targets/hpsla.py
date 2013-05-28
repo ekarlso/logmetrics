@@ -28,9 +28,9 @@ class HpslaParseCommand(ParseCommand):
         parser = super(HpslaParseCommand, self).get_parser(prog_name)
 
         parser.add_argument('--namespace', required=True)
-        parser.add_argument('--type', required=True)
         parser.add_argument('--region', required=True)
         parser.add_argument('--az', type=int, required=True)
+        parser.add_argument('--hostname', default=socket.gethostname())
 
 
         parser.add_argument('--os-endpoint',
@@ -88,19 +88,19 @@ class HpslaParseCommand(ParseCommand):
 
         self.target = HpslaTarget(maasclient_args,
                                   self.parsed_args.namespace,
-                                  self.parsed_args.type,
                                   self.parsed_args.region,
-                                  self.parsed_args.az)
+                                  self.parsed_args.az,
+                                  self.parsed_args.hostname)
 
 
 class HpslaTarget(Target):
-    def __init__(self, maasclient_args, namespace, type_, region, az):
+    def __init__(self, maasclient_args, namespace, region, az, hostname):
         self.maasclient_args = maasclient_args
         self._client = None
         self.namespace = namespace
-        self.type_ = type_
         self.region = region
         self.az = az
+        self.hostname = hostname
 
     @property
     def client(self):
@@ -129,14 +129,14 @@ class HpslaTarget(Target):
     def send_metric(self, name, value, timestamp):
         metric = MaasMetric(**{
             'namespace': self.namespace,
-            'type': self.type_,
-            'subject': name,
+            'type': name,
             'timestamp': calendar.timegm(timestamp.timetuple()),
             'value': value,
             'dimensions': {
                 'sla': 'sla',
                 'region': self.region,
                 'az': self.az,
+                'hostname': self.hostname
             }
         })
 
