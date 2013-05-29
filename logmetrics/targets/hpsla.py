@@ -31,6 +31,7 @@ class HpslaParseCommand(ParseCommand):
         parser.add_argument('--region', required=True)
         parser.add_argument('--az', type=int, required=True)
         parser.add_argument('--hostname', default=socket.gethostname())
+        parser.add_argument('--service', required=True)
 
 
         parser.add_argument('--os-endpoint',
@@ -90,17 +91,20 @@ class HpslaParseCommand(ParseCommand):
                                   self.parsed_args.namespace,
                                   self.parsed_args.region,
                                   self.parsed_args.az,
-                                  self.parsed_args.hostname)
+                                  self.parsed_args.hostname,
+                                  self.parsed_args.service)
 
 
 class HpslaTarget(Target):
-    def __init__(self, maasclient_args, namespace, region, az, hostname):
+    def __init__(self, maasclient_args, namespace, region, az, hostname,
+                 service):
         self.maasclient_args = maasclient_args
         self._client = None
         self.namespace = namespace
         self.region = region
         self.az = az
         self.hostname = hostname
+        self.service = service
 
     @property
     def client(self):
@@ -136,7 +140,8 @@ class HpslaTarget(Target):
                 'sla': 'sla',
                 'region': self.region,
                 'az': self.az,
-                'hostname': self.hostname
+                'hostname': self.hostname,
+                'service': self.service
             }
         })
 
