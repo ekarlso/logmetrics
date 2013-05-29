@@ -31,24 +31,24 @@ class GraphiteParseCommand(ParseCommand):
 
     def init_target(self):
         self.target = GraphiteTarget(self.parsed_args.graphite_host,
-                                     self.parsed_args.graphite_port)
+                                     self.parsed_args.graphite_port,
+                                     self.parsed_args.graphite_metric_prefix)
 
 
 class GraphiteTarget(Target):
-    def __init__(self, host, port):
+    def __init__(self, host, port, metric_prefix):
         self._addr = (host, port)
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._sock.connect(self._addr)
+        self._metric_prefix = metric_prefix
 
     def publish(self, metrics):
         for metric in metrics:
             self.send_metric(metric.name, metric.value, metric.timestamp)
 
     def send_metric(self, name, value, timestamp):
-        prefix = parsed_args.graphite_metric_prefix
-
-        if prefix:
-            name = "%s.%s" % (prefix, name)
+        if self._metric_prefix:
+            name = "%s.%s" % (self._metric_prefix, name)
 
         timestamp = calendar.timegm(timestamp.timetuple())
 
